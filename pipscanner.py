@@ -135,7 +135,7 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
 
 
         # TODO: Move CVEMatching to occur after filling up the data structures
-        #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = CVEs
+        #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = [CVEs]
         cveMatch = package_version_match_CVEs(depTree, packageObj)
 
 
@@ -251,7 +251,7 @@ def parse_CVE_config_nodes(node, cveItem, packageObj, parentOperator=False):
 
             # TODO: Fix this as it does not cover the cases where there is no version end.
             #       Also move checking for package vulnerability status into different function
-            #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = CVEs
+            #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = [CVEs]
             # Retrieve range of vulnerable versions from configurations' node
             if 'versionEndIncluding' in node_cpe_match_element:
                 latest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionEndIncluding'])
