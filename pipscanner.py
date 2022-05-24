@@ -131,7 +131,12 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
         #Adding CVEs should only occur for each packageJSONEntry and not when every package is created.
         time.sleep(.1)
         cveResponse = getCVEData(["keyword"], [packageObj.package_name])
-        cveMatch = package_version_match_CVE(cveResponse, packageObj)
+        cveParsed = parse_CVEs(cveResponse, packageObj)
+
+
+        # TODO: Move CVEMatching to occur after filling up the data structures
+        #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = CVEs
+        cveMatch = package_version_match_CVEs(depTree, packageObj)
 
 
         # print(packageArrayObject)
@@ -165,10 +170,29 @@ def getCVEData(paramNames, paramVals):
 
 
 # Function: Goes through the deptree and compare package version to CVE entry and version number
-# TODO: May be able to optimize by making this a callable function from the deptree parser
-def package_version_match_CVE(cveReturn, packageObj):
+# NEWTODO: Do not optimize. Instead use it to evaluate the data after cpe's have been retrieved
+#          Use what is currently in this function to fill the cpe's and do the version matching using different logic.
+def package_version_match_CVEs(depTree):
     packageCVEMatch = False
 
+    # Parse through the deptree and match CVEs and CPE's for the given package to decide if vulnerable.
+    # May need to duplicate parts of parse_CVE_config_nodes() in order to evaluate the parent/child node relationships
+
+    for package in dependencyTree:
+        # If there are no CVE results then move on to next package
+        pass
+
+
+# Similar to parse_CVE_config_nodes()
+# Will do the cpe matching
+def package_match_configurations(packageObj):
+    pass
+
+
+# Function: Goes through the cve entries for a package and fills the cpe dictionary
+# TODO: May be able to optimize by making this a callable function from the deptree parser
+# NEWTODO: Have it add each possible vulnerability (this should be cveItem) to the packageObj
+def parse_CVEs(cveReturn, packageObj)
     # for package in dependencyTree:
         # If there are no CVE results then move on to next package
     if cveReturn['resultsPerPage'] != 0:        
@@ -176,7 +200,10 @@ def package_version_match_CVE(cveReturn, packageObj):
             if 'configurations' in cveItem:
                 if 'nodes' in cveItem['configurations']:
                     for node in cveItem['configurations']['nodes']:
-                        packageCVEMatch = parse_cve_config_nodes(node, cveItem, packageObj)
+                        packageCVEMatch = parse_CVE_config_nodes(node, cveItem, packageObj)
+
+            # The below line should be good as of 24May
+            packageObj.all_package_vulns.append(cveItem)
 
     return packageCVEMatch
 
@@ -184,7 +211,7 @@ def package_version_match_CVE(cveReturn, packageObj):
 
 # Helper function for package_version_match_CVE
 # Uses recursion for the Configurations tree.
-def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
+def parse_CVE_config_nodes(node, cveItem, packageObj, parentOperator=False):
     cpeMatch = False
     packageIsVulnerable = False
     print('node: ' + str(node))
@@ -194,7 +221,7 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
         # if node['operator'].upper() == 'AND':
         for childNode in node['children']:
             if 'operator' in childNode:
-                cpeMatch, packageIsVulnerable = parse_cve_config_nodes(childNode, cveItem, packageObj, node['operator']) 
+                cpeMatch, packageIsVulnerable = parse_CVE_config_nodes(childNode, cveItem, packageObj, node['operator']) 
                 if node['operator'].upper() == 'AND' and cpeMatch == False:
                     break
                 elif node['operator'].upper() == 'OR' and cpeMatch == True:
@@ -216,11 +243,15 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
 
             # See if the cpe node is vulnerable
             # cpe_is_vulnerable = False
-            if node_cpe_match_element['vulnerable'] != True and cpe_product != packageObj.package_name:
-                # cpe_is_vulnerable = True
-            # else:
-                continue
+            # if node_cpe_match_element['vulnerable'] != True and cpe_product != packageObj.package_name:
+            #     # cpe_is_vulnerable = True
+            # # else:
+            #     continue
 
+
+            # TODO: Fix this as it does not cover the cases where there is no version end.
+            #       Also move checking for package vulnerability status into different function
+            #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = CVEs
             # Retrieve range of vulnerable versions from configurations' node
             if 'versionEndIncluding' in node_cpe_match_element:
                 latest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionEndIncluding'])
@@ -258,11 +289,14 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
 
             # Consider thinking about dealing with operators by creating a list/dictionary containing all of the cpe's and just searching through it later 
             # to match cpe's with operators. May need to do this in the node child logic branch 
-            if cpeMatch and not parentOperator:
+            if cpeMatch:
                 packageObj.vulns_for_installed_version.append(cveItem)
                 packageIsVulnerable = True
-            # else:
-            #     cpeMatch = True
+
+            # TODO: add logic to deal with other CPE that are not our product
+            #       may need to change the parser so that all cpe's for the dependency tree are loaded then go through the cpe's later.
+            # elif not cpeMatch : and
+            
             packageObj.all_package_vulns.append(cveItem)
 
 
