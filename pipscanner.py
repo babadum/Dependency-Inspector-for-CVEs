@@ -181,18 +181,27 @@ def package_version_match_CVE(cveReturn, packageObj):
     return packageCVEMatch
 
 
+
+# Helper function for package_version_match_CVE
+# Uses recursion for the Configurations tree.
 def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
+    cpeMatch = False
+    packageIsVulnerable = False
     print('node: ' + str(node))
+
     if node['children']:
         print('children' + str(node['children']))
     elif node['cpe_match']:
+        # May need to move all of the below branch code to a function that allows us to take into account the operator for each cpe_match node.
+        
+
         # print('cpe_match: ' + str(node['cpe_match']))
         for node_cpe_match_element in node['cpe_match']:
             UriList = node_cpe_match_element['cpe23Uri'].split(':')
             # print('UriList: ' + str(UriList))
             cpe_product = UriList[4]
             # print('node_cpe_match_element: ' + str(node_cpe_match_element))
-            packageIsVulnerable = False
+            # cpeMatch = False
 
             # See if the cpe node is vulnerable
             # cpe_is_vulnerable = False
@@ -208,13 +217,13 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
                     if 'versionStartIncluding' in node_cpe_match_element:
                         earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
                         if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
-                            packageIsVulnerable = True
+                            cpeMatch = True
                     elif 'versionStartExcluding' in node_cpe_match_element:
                         earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
                         if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
-                            packageIsVulnerable = True
+                            cpeMatch = True
                     else:
-                        packageIsVulnerable = True
+                        cpeMatch = True
                 # else:
                     # print('got here ----------------------------------')
                 # print(latest_vuln_version_inclusive)
@@ -224,11 +233,11 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
                     if 'versionStartIncluding' in node_cpe_match_element:
                         earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
                         if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
-                            packageIsVulnerable = True
+                            cpeMatch = True
                     elif 'versionStartExcluding' in node_cpe_match_element:
                         earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
                         if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
-                            packageIsVulnerable = True
+                            cpeMatch = True
                     else:
                         packageObj.vulns_for_installed_version.append(cveItem)
                 # else:
@@ -238,13 +247,15 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
 
             # Consider thinking about dealing with operators by creating a list/dictionary containing all of the cpe's and just searching through it later 
             # to match cpe's with operators. May need to do this in the node child logic branch 
-            if packageIsVulnerable and not parentOperator:
+            if cpeMatch and not parentOperator:
                 packageObj.vulns_for_installed_version.append(cveItem)
-
+                packageIsVulnerable = True
+            # else:
+            #     cpeMatch = True
             packageObj.all_package_vulns.append(cveItem)
 
 
-    return True
+    return (cpeMatch, packageIsVulnerable)
 
 def main():
     packagesToCheck = ["tensorflow"]
