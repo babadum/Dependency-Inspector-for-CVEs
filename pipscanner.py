@@ -176,66 +176,73 @@ def package_version_match_CVE(cveReturn, packageObj):
             if 'configurations' in cveItem:
                 if 'nodes' in cveItem['configurations']:
                     for node in cveItem['configurations']['nodes']:
-                        parse_cve_config_nodes()
+                        parse_cve_config_nodes(node, cveItem, packageObj)
 
     return packageCVEMatch
 
 
-def parse_cve_config_nodes(node, cveItem, packageObj):
-# print('node: ' + str(node))
-if node['children']:
-    print('children' + str(node['children']))
-elif node['cpe_match']:
-    # print('cpe_match: ' + str(node['cpe_match']))
-    for node_cpe_match_element in node['cpe_match']:
-        UriList = node_cpe_match_element['cpe23Uri'].split(':')
-        # print('UriList: ' + str(UriList))
-        cpe_product = UriList[4]
-        print('node_cpe_match_element: ' + str(node_cpe_match_element))
+def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
+    print('node: ' + str(node))
+    if node['children']:
+        print('children' + str(node['children']))
+    elif node['cpe_match']:
+        # print('cpe_match: ' + str(node['cpe_match']))
+        for node_cpe_match_element in node['cpe_match']:
+            UriList = node_cpe_match_element['cpe23Uri'].split(':')
+            # print('UriList: ' + str(UriList))
+            cpe_product = UriList[4]
+            # print('node_cpe_match_element: ' + str(node_cpe_match_element))
+            packageIsVulnerable = False
 
-        # See if the cpe node is vulnerable
-        # cpe_is_vulnerable = False
-        if node_cpe_match_element['vulnerable'] != True and cpe_product != packageObj.package_name:
-            # cpe_is_vulnerable = True
-        # else:
-            continue
+            # See if the cpe node is vulnerable
+            # cpe_is_vulnerable = False
+            if node_cpe_match_element['vulnerable'] != True and cpe_product != packageObj.package_name:
+                # cpe_is_vulnerable = True
+            # else:
+                continue
 
-        # Retrieve range of vulnerable versions from configurations' node
-        if 'versionEndIncluding' in node_cpe_match_element:
-            latest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionEndIncluding'])
-            if version.parse(packageObj.installed_version) <= latest_vuln_version_inclusive:
-                if 'versionStartIncluding' in node_cpe_match_element:
-                    earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
-                    if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+            # Retrieve range of vulnerable versions from configurations' node
+            if 'versionEndIncluding' in node_cpe_match_element:
+                latest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionEndIncluding'])
+                if version.parse(packageObj.installed_version) <= latest_vuln_version_inclusive:
+                    if 'versionStartIncluding' in node_cpe_match_element:
+                        earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
+                        if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+                            packageIsVulnerable = True
+                    elif 'versionStartExcluding' in node_cpe_match_element:
+                        earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
+                        if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
+                            packageIsVulnerable = True
+                    else:
+                        packageIsVulnerable = True
+                # else:
+                    # print('got here ----------------------------------')
+                # print(latest_vuln_version_inclusive)
+            elif 'versionEndExcluding' in node_cpe_match_element:
+                latest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionEndExcluding'])
+                if version.parse(packageObj.installed_version) < latest_vuln_version_exclusive:
+                    if 'versionStartIncluding' in node_cpe_match_element:
+                        earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
+                        if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+                            packageIsVulnerable = True
+                    elif 'versionStartExcluding' in node_cpe_match_element:
+                        earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
+                        if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
+                            packageIsVulnerable = True
+                    else:
                         packageObj.vulns_for_installed_version.append(cveItem)
-                elif 'versionStartExcluding' in node_cpe_match_element:
-                    earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
-                    if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
-                        packageObj.vulns_for_installed_version.append(cveItem)
-                else:
-                    packageObj.vulns_for_installed_version.append(cveItem)
-            else:
-                print('got here ----------------------------------')
-                packageObj.all_package_vulns.append(cveItem)
-                continue
-            # print(latest_vuln_version_inclusive)
-        if 'versionEndExcluding' in node_cpe_match_element:
-            latest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionEndExcluding'])
-            if version.parse(packageObj.installed_version) < latest_vuln_version_exclusive:
-                if 'versionStartIncluding' in node_cpe_match_element:
-                    earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
-                    if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
-                        packageObj.vulns_for_installed_version.append(cveItem)
-                elif 'versionStartExcluding' in node_cpe_match_element:
-                    earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
-                    if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
-                        packageObj.vulns_for_installed_version.append(cveItem)
-                else:
-                    packageObj.vulns_for_installed_version.append(cveItem)
-            else:
-                print('also got here -----------------------------')
-                packageObj.all_package_vulns.append(cveItem)
-                continue
+                # else:
+                    # print('also got here -----------------------------')
+                    # packageObj.all_package_vulns.append(cveItem)
+
+
+            # Consider thinking about dealing with operators by creating a list/dictionary containing all of the cpe's and just searching through it later 
+            # to match cpe's with operators. May need to do this in the node child logic branch 
+            if packageIsVulnerable and not parentOperator:
+                packageObj.vulns_for_installed_version.append(cveItem)
+
+            packageObj.all_package_vulns.append(cveItem)
+
 
     return True
 
