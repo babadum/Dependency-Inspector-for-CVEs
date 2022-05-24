@@ -176,7 +176,7 @@ def package_version_match_CVE(cveReturn, packageObj):
             if 'configurations' in cveItem:
                 if 'nodes' in cveItem['configurations']:
                     for node in cveItem['configurations']['nodes']:
-                        parse_cve_config_nodes(node, cveItem, packageObj)
+                        packageCVEMatch = parse_cve_config_nodes(node, cveItem, packageObj)
 
     return packageCVEMatch
 
@@ -191,8 +191,19 @@ def parse_cve_config_nodes(node, cveItem, packageObj, parentOperator=False):
 
     if node['children']:
         print('children' + str(node['children']))
+        # if node['operator'].upper() == 'AND':
+        for childNode in node['children']:
+            if 'operator' in childNode:
+                cpeMatch, packageIsVulnerable = parse_cve_config_nodes(childNode, cveItem, packageObj, node['operator']) 
+                if node['operator'].upper() == 'AND' and cpeMatch == False:
+                    break
+                elif node['operator'].upper() == 'OR' and cpeMatch == True:
+                    break
+            else:
+                print('ERROR: No operator in node')
+
     elif node['cpe_match']:
-        # May need to move all of the below branch code to a function that allows us to take into account the operator for each cpe_match node.
+        # May need to move all of the below branch code to a recursive function that allows us to take into account the operator for each cpe_match node.
         
 
         # print('cpe_match: ' + str(node['cpe_match']))
