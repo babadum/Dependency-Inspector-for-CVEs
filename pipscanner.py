@@ -193,7 +193,7 @@ def package_version_match_CVEs(dependencyTree, cpeDict):
 
 # Similar to parse_CVE_config_nodes()
 # Will do the cpe matching
-def package_match_configurations(node, possCVE, packageObj, cpeDict):
+def package_match_configurations(node, cve, packageObj, cpeDict):
     cpeMatch = False
     packageIsVulnerable = False
     # print('node: ' + str(node))
@@ -210,6 +210,7 @@ def package_match_configurations(node, possCVE, packageObj, cpeDict):
                     break
                 elif node['operator'].upper() == 'OR' and cpeMatch == True:
                     break
+                #May need to add branch to deal with negate operator
             else:
                 print('ERROR: No operator in node')
 
@@ -218,11 +219,11 @@ def package_match_configurations(node, possCVE, packageObj, cpeDict):
 
         # print('cpe_match: ' + str(node['cpe_match']))
         for node_cpe_match_element in node['cpe_match']:
-            UriList = node_cpe_match_element['cpe23Uri'].split(':')
-            # print('UriList: ' + str(UriList))
-            cpe_product = UriList[4]
-            # print('node_cpe_match_element: ' + str(node_cpe_match_element))
-            # cpeMatch = False
+            # UriList = node_cpe_match_element['cpe23Uri'].split(':')
+            # # print('UriList: ' + str(UriList))
+            # cpe_product = UriList[4]
+            # # print('node_cpe_match_element: ' + str(node_cpe_match_element))
+            # # cpeMatch = False
             cveID = cve['cve']['CVE_data_meta']['ID']
 
 
@@ -266,7 +267,17 @@ def package_match_configurations(node, possCVE, packageObj, cpeDict):
                         if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
                             cpeMatch = True
                     else:
-                        packageObj.vulns_for_installed_version.append(cveItem)
+                        cpeMatch = True
+                        # packageObj.vulns_for_installed_version.append(cveItem)
+            elif 'versionStartIncluding' in node_cpe_match_element:
+                earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
+                if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+                    cpeMatch = True
+            elif 'versionStartExcluding' in node_cpe_match_element:
+                earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
+                if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
+                    cpeMatch = True
+
                 # else:
                     # print('also got here -----------------------------')
                     # packageObj.all_package_vulns.append(cveItem)
@@ -275,14 +286,14 @@ def package_match_configurations(node, possCVE, packageObj, cpeDict):
             # Consider thinking about dealing with operators by creating a list/dictionary containing all of the cpe's and just searching through it later 
             # to match cpe's with operators. May need to do this in the node child logic branch 
             if cpeMatch:
-                packageObj.vulns_for_installed_version.append(cveItem)
+                # packageObj.vulns_for_installed_version.append(cveItem)
                 packageIsVulnerable = True
 
             # TODO: add logic to deal with other CPE that are not our product
             #       may need to change the parser so that all cpe's for the dependency tree are loaded then go through the cpe's later.
             # elif not cpeMatch : and
             
-            packageObj.all_package_vulns.append(cveItem)
+            # packageObj.all_package_vulns.append(cveItem)
 
 
     # TODO: May (weak maybe) need to add something to ensure that the final cpeMatch is correct and matches the operator.
