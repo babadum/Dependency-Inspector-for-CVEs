@@ -70,10 +70,14 @@ def retrieve_raw_package_dependencies(package):
 def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
     jsonDeptree = json.loads(rawJSONString)
 
-    # A dictionary containing package objects with key = packageNameString and value = package objects
+    # deptree: A dictionary containing package objects with key = packageNameString and value = package objects
     # {packageName: PackageObject}
 
     parentPackage = None
+    deptree = {}
+
+    # cpeDict: A dictionary of cpe's where the key = cpe and value = [CVEs] 
+    cpeDict = {}
     # print(deptree[0]['package']['package_name'])
     # packageNames = []
     
@@ -135,7 +139,7 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
 
         # TODO: Move CVEMatching to occur after filling up the data structures
         #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = [CVEs]
-        # cveMatch = package_version_match_CVEs(deptree, cpeDict)
+        cveMatch = package_version_match_CVEs(deptree, cpeDict)
 
 
         # print(packageArrayObject)
@@ -177,7 +181,8 @@ def package_version_match_CVEs(dependencyTree, cpeDict):
     # Parse through the deptree and match CVEs and CPE's for the given package to decide if vulnerable.
     # May need to duplicate parts of parse_CVE_config_nodes() in order to evaluate the parent/child node relationships
 
-    for package in dependencyTree:
+    for package_key in dependencyTree:
+        package = dependencyTree[package_key]
         # If there are no CVE results then move on to next package
         if not package.all_package_vulns:
             continue
@@ -187,13 +192,13 @@ def package_version_match_CVEs(dependencyTree, cpeDict):
                     if 'nodes' in possibleCVE['configurations']:
                         for node in possibleCVE['configurations']['nodes']:
                             # cpeDict =
-                            cpeMatch, packageCVEMatch = package_match_configurations(node, possibleCVE, package, cpeDict)
+                            cpeMatch, packageCVEMatch = package_match_configurations(node, possibleCVE, package, cpeDict, dependencyTree)
     return packageCVEMatch
 
 
 # Similar to parse_CVE_config_nodes()
 # Will do the cpe matching
-def package_match_configurations(node, cve, packageObj, cpeDict):
+def package_match_configurations(node, cve, packageObj, cpeDict, dependencyTree):
     cpeMatch = False
     packageIsVulnerable = False
     # print('node: ' + str(node))
@@ -215,16 +220,17 @@ def package_match_configurations(node, cve, packageObj, cpeDict):
                 print('ERROR: No operator in node')
 
     elif node['cpe_match']:
-        # May need to move all of the below branch code to a recursive function that allows us to take into account the operator for each cpe_match node.
+        # DONE May need to move all of the below branch code to a recursive function that allows us to take into account the operator for each cpe_match node.
 
-        # print('cpe_match: ' + str(node['cpe_match']))
+        print('cpe_match: ' + str(node['cpe_match']))
         for node_cpe_match_element in node['cpe_match']:
             # UriList = node_cpe_match_element['cpe23Uri'].split(':')
             # # print('UriList: ' + str(UriList))
-            # cpe_product = UriList[4]
+            cpe_product = UriList[4]
             # # print('node_cpe_match_element: ' + str(node_cpe_match_element))
             # # cpeMatch = False
             cveID = cve['cve']['CVE_data_meta']['ID']
+            print("node_cpe_match_element_URI: " + node_cpe_match_element['cpe23Uri'])
 
 
             # See if the cpe node is vulnerable
@@ -234,21 +240,33 @@ def package_match_configurations(node, cve, packageObj, cpeDict):
             # # else:
             #     continue
 
+            cpePackageObj = packageObj
+            # Retrieve the package that the cpe refers to if available
+            if cpe_product != packageObj.package_name:
+                if cpe_product not in dependencyTree:
+                    continue
+                else:
+                    cpePackageObj = dependencyTree[cpe_product]
+
 
             # TODO: Fix this as it does not cover the cases where there is no version end.
-            #       Also move checking for package vulnerability status into different function
+            #           DONE Also move checking for package vulnerability status into different function
             #       Conduct evaluation after filling up a dictionary of cpe's where the key = cpe and value = [CVEs]
-            # Retrieve range of vulnerable versions from configurations' node
+            #       May need to move this deeper after a check to see that the node element is applicable to the current package being assessed
+            #       Also may be using the wrong packageObj to check installed versions as it should be checking for whichever package the cpe refers to
+            #           Not the package that contains the cpe. 
+            # Retrieve range of vulnerable versions from configurations' node for the current package being evaluate
+            cpe_package_installed_version = version.parse(cpePackageObj.installed_version)
             if 'versionEndIncluding' in node_cpe_match_element:
                 latest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionEndIncluding'])
-                if version.parse(packageObj.installed_version) <= latest_vuln_version_inclusive:
+                if cpe_package_installed_version <= latest_vuln_version_inclusive:
                     if 'versionStartIncluding' in node_cpe_match_element:
                         earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
-                        if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+                        if cpe_package_installed_version >= earliest_vuln_version_inclusive:
                             cpeMatch = True
                     elif 'versionStartExcluding' in node_cpe_match_element:
                         earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
-                        if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
+                        if cpe_package_installed_version > earliest_vuln_version_inclusive:
                             cpeMatch = True
                     else:
                         cpeMatch = True
@@ -257,25 +275,25 @@ def package_match_configurations(node, cve, packageObj, cpeDict):
                 # print(latest_vuln_version_inclusive)
             elif 'versionEndExcluding' in node_cpe_match_element:
                 latest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionEndExcluding'])
-                if version.parse(packageObj.installed_version) < latest_vuln_version_exclusive:
+                if cpe_package_installed_version < latest_vuln_version_exclusive:
                     if 'versionStartIncluding' in node_cpe_match_element:
                         earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
-                        if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+                        if cpe_package_installed_version >= earliest_vuln_version_inclusive:
                             cpeMatch = True
                     elif 'versionStartExcluding' in node_cpe_match_element:
                         earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
-                        if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
+                        if cpe_package_installed_version > earliest_vuln_version_inclusive:
                             cpeMatch = True
                     else:
                         cpeMatch = True
                         # packageObj.vulns_for_installed_version.append(cveItem)
             elif 'versionStartIncluding' in node_cpe_match_element:
                 earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
-                if version.parse(packageObj.installed_version) >= earliest_vuln_version_inclusive:
+                if cpe_package_installed_version >= earliest_vuln_version_inclusive:
                     cpeMatch = True
             elif 'versionStartExcluding' in node_cpe_match_element:
                 earliest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionStartExcluding'])
-                if version.parse(packageObj.installed_version) > earliest_vuln_version_inclusive:
+                if cpe_package_installed_version > earliest_vuln_version_inclusive:
                     cpeMatch = True
 
                 # else:
@@ -316,6 +334,7 @@ def parse_CVEs(cveReturn, packageObject, cpeDict):
             # print()
             if 'configurations' in cveItem:
                 if 'nodes' in cveItem['configurations']:
+                    #node is a list element
                     for node in cveItem['configurations']['nodes']:
                         # cpeDict =
                         parse_CVE_config_nodes(node, cveItem, packageObject, cpeDict)
@@ -341,7 +360,10 @@ def parse_CVE_config_nodes(node, cve, packageObj, cpeDict): #, parentOperator=Fa
 
     elif node['cpe_match']:        
         # print('cpe_match: ' + str(node['cpe_match']))
-        for node_cpe_match_element in node['cpe_match']:
+
+        # node_cpe_match_element is a dictionary element in the node['cpe_match'] list
+        for node_cpe_match_element in node['cpe_match']:    
+            # print(node_cpe_match_element)
             # UriList = node_cpe_match_element['cpe23Uri'].split(':')
             # print('UriList: ' + str(UriList))
             # cpe_product = UriList[4]
@@ -370,7 +392,7 @@ def main():
     f.close()
 
     dTree, parentPackage, cpeDict = parse_Pipdeptree_JSON_For_NVD_CVEs(output, packagesToCheck[0])
-    print(cpeDict)
+    # print(cpeDict)
 
     # print(pip_list.stdout)
     # print(" 'pip_list' ran with exit code %d" %pip_list.returncode)
