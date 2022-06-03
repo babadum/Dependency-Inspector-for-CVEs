@@ -6,88 +6,8 @@ import json
 import requests
 import time
 from packaging import version
+from packageClass import Package
 
-
-# NOTE: May need to actually make the package class for easier processing of the nodes of the deptree
-
-# Class Package contains dependencies of the package labeled by the class
-class Package():
-    """docstring for Package"""
-    def __init__(self, name):
-        # super(Package, self).__init__()
-        self.package_name = name
-        self.installed_version = None
-        self.required_versions = []
-        self.dependencies = []
-        self.depth = 0
-        self.vulns_for_installed_version = []
-        self.is_parent_package = False
-        self.all_package_vulns = []
-
-
-    def __str__(self):
-        packageString = 'package: ' + self.package_name + ' | installed version: ' + self.installed_version
-
-        if len(self.required_versions) > 0:
-            packageString += ' \n\n\t required versions: ['
-
-            for i in range(len(self.required_versions)):
-                if i == 0:
-                    packageString += '\n\t'
-                packageString += str(self.required_versions[i]) 
-                if i != len(self.required_versions)-1:
-                    packageString += ', '
-
-            packageString += '\n\t]\n'
-        else:
-            packageString += ' \n\t required versions: []'
-
-        if len(self.dependencies) > 0:
-            packageString += ' \n\n\t dependencies: ['
-
-            for i in range(len(self.dependencies)):
-                if i == 0:
-                    packageString += '\n\t'
-                packageString += str(self.dependencies[i]) 
-                if i != len(self.dependencies)-1:
-                    packageString += '\t '
-
-            packageString += '\n\t]\n'
-        else:
-            packageString += ' \n\t dependencies: []'
-
-        if len(self.vulns_for_installed_version) > 0:
-            packageString += ' \n\t vulns for installed version: ['
-
-            for i in range(len(self.vulns_for_installed_version)):
-                if i == 0:
-                    packageString += '\n\t'
-                packageString += str(self.vulns_for_installed_version[i]['cve']['CVE_data_meta']['ID']) 
-                if i != len(self.vulns_for_installed_version)-1:
-                    packageString += ', '
-
-            packageString += '\n\t]\n'
-        else:
-            packageString += ' \n\t vulns for installed version: []'
-
-        if len(self.all_package_vulns) > 0:
-            packageString += ' \n\t all vulns for any version: ['
-
-            for i in range(len(self.all_package_vulns)):
-                if i == 0:
-                    packageString += '\n\t'
-                packageString += str(self.all_package_vulns[i]['cve']['CVE_data_meta']['ID']) 
-                if i != len(self.all_package_vulns)-1:
-                    packageString += ', '
-
-            packageString += '\n\t]\n'
-        else:
-            packageString += ' \n\t all vulns for any version: []'
-
-
-        packageString += '\n'
-
-        return packageString 
 
 
 # Function: Calls pipdeptree on the specified package
@@ -143,7 +63,7 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
         # packageNames.append(packageName)
 
         #may need to check if package already exists in deptree before creating a new package object
-        if ((packageName in deptree) and (packageName != parentName)) or ((parentName == packageName) and deptree[parentName]):
+        if ((packageName in deptree) and (packageName != parentName)) or ((parentName == packageName) and packageName in deptree):
             packageObj = deptree[packageName]
         else:
             packageObj = Package(packageName)
@@ -192,9 +112,9 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
         # print(packageArrayObject)
 
         # For testing, limits number of results
-        i+=1
-        if i>=10:
-            break
+        # i+=1
+        # if i>=20:
+        #     break
 
     return (deptree, parentPackage, cpeDict)
 
@@ -221,18 +141,21 @@ def getCVEData(paramNames, paramVals):
 # NEWTODO: Use to evaluate the data after cpe's have been retrieved
 #          Use what is currently in this function to fill the cpe's and do the version matching using different logic.
 def package_version_match_CVEs(dependencyTree, cpeDict):
-    packageCVEMatch = False
+    # packageCVEMatch = False
+    # cpeMatch = False
 
     # Parse through the deptree and match CVEs and CPE's for the given package to decide if vulnerable.
     # May need to duplicate parts of parse_CVE_config_nodes() in order to evaluate the parent/child node relationships
 
     for package_key in dependencyTree:
+        # cpeMatch = False
         package = dependencyTree[package_key]
         # If there are no CVE results then move on to next package
         if not package.all_package_vulns:
             continue
         else:
             for possibleCVE in package.all_package_vulns:
+                packageCVEMatch = False
                 if 'configurations' in possibleCVE:
                     if 'nodes' in possibleCVE['configurations']:
                         for node in possibleCVE['configurations']['nodes']:
@@ -247,6 +170,7 @@ def package_version_match_CVEs(dependencyTree, cpeDict):
                         if cpeMatch == True:# node['operator'].upper() == 'AND' and packageCVEMatch == True:
                             packageCVEMatch = True
                 if packageCVEMatch:# and (possibleCVE not in package.vulns_for_installed_version):
+                    # print('packageCVEMatch: ' + str(packageCVEMatch) + ' cpeMatch: ' + str(cpeMatch))
                     package.vulns_for_installed_version.append(possibleCVE)
     return packageCVEMatch
 
@@ -324,10 +248,9 @@ def package_match_configurations(node, cve, packageObj, cpeDict, dependencyTree)
             cpe_package_installed_version = version.parse(cpePackageObj.installed_version)
             # print(cpe_product_version)
             if cpe_product_version != '*':
-                # print('cpe_product_version: ' + cpe_product_version + ' cpe_package_installed_version == version.parse(cpe_product_version): ' + (cpe_package_installed_version == version.parse(cpe_product_version)))
+                # print('cpe_product_version: ' + cpe_product_version + ' cpe_package_installed_version == version.parse(cpe_product_version): ' + str(cpe_package_installed_version == version.parse(cpe_product_version)))
                 if cpe_package_installed_version == version.parse(cpe_product_version):
                     cpeMatch = True
-
             if 'versionEndIncluding' in node_cpe_match_element:
                 latest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionEndIncluding'])
                 if cpe_package_installed_version <= latest_vuln_version_inclusive:
@@ -344,7 +267,7 @@ def package_match_configurations(node, cve, packageObj, cpeDict, dependencyTree)
                 # else:
 
                 # print('versionEndIncluding exists in the node_cpe_match_element ----------------------------------')
-                # print(latest_vuln_version_inclusive)
+                # print('cpeMatch: ' + str(cpeMatch) + ' latest_vuln_version_inclusive: ' + str(latest_vuln_version_inclusive) + ' cpe_package_installed_version: ' + str(cpe_package_installed_version) + ' cpe_package_installed_version <= latest_vuln_version_inclusive: ' + str(cpe_package_installed_version <= latest_vuln_version_inclusive))
             elif 'versionEndExcluding' in node_cpe_match_element:
                 latest_vuln_version_exclusive = version.parse(node_cpe_match_element['versionEndExcluding'])
                 if cpe_package_installed_version < latest_vuln_version_exclusive:
@@ -360,6 +283,7 @@ def package_match_configurations(node, cve, packageObj, cpeDict, dependencyTree)
                         cpeMatch = True
                         # packageObj.vulns_for_installed_version.append(cveItem)
                 # print('versionEndExcluding exists in the node_cpe_match_element ----------------------------------')
+                # print('cpeMatch: ' + str(cpeMatch) + ' latest_vuln_version_exclusive: ' + str(latest_vuln_version_exclusive) + ' cpe_package_installed_version: ' + str(cpe_package_installed_version) + ' cpe_package_installed_version <= latest_vuln_version_exclusive: ' + str(cpe_package_installed_version < latest_vuln_version_exclusive))
 
             elif 'versionStartIncluding' in node_cpe_match_element:
                 earliest_vuln_version_inclusive = version.parse(node_cpe_match_element['versionStartIncluding'])
@@ -392,6 +316,7 @@ def package_match_configurations(node, cve, packageObj, cpeDict, dependencyTree)
     # if cpeMatch == True: #node['operator'].upper() == 'AND' and packageIsVulnerable == True:
     #     packageIsVulnerable = True
 
+    #print('cpeMatch: ' + str(cpeMatch))
     return cpeMatch #, packageIsVulnerable)
 
 
@@ -417,7 +342,7 @@ def parse_CVEs(cveReturn, packageObject, cpeDict):
     # print( str(cpeDict))
     return 0
 
-
+ 
 
 # Helper function for package_version_match_CVE
 # Uses recursion for the Configurations tree.
@@ -457,11 +382,16 @@ def parse_CVE_config_nodes(node, cve, packageObj, cpeDict): #, parentOperator=Fa
     return 0
 
 # TODO: Traverse dTree and figure out dependency depth
-def Traverse_Tree_For_Dep_Depth(depTree, parent, currentDepth):
-    pass
+def Traverse_Tree_For_Dep_Depth(parentNodeObj, currentDepth):
+    if parentNodeObj.depth == 0 or parentNodeObj.depth > currentDepth:
+        parentNodeObj.depth = currentDepth
+    if len(parentNodeObj.dependencies) > 0:
+        for childNodeObj in parentNodeObj.dependencies:
+            Traverse_Tree_For_Dep_Depth(childNodeObj, currentDepth + 1)
+    return
 
 def main():
-    packagesToCheck = ["tensorflow"]
+    packagesToCheck = ["numpy"] #tested with numpy and tensorboard packages.
     output, errors = retrieve_raw_package_dependencies( packagesToCheck[0] )
     f = open("pip_list_results.txt", "w")
     f.write(output)
@@ -474,9 +404,13 @@ def main():
     cveMatch = package_version_match_CVEs(dTree, cpeDict)
 
 
+    Traverse_Tree_For_Dep_Depth(parentPackage, 0)
+
     for packageKey in dTree:
         print(dTree[packageKey])
         print()
+
+
 
     # print(cpeDict)
 
