@@ -457,7 +457,8 @@ def parse_CVE_config_nodes(node, cve, packageObj, cpeDict): #, parentOperator=Fa
     return 0
 
 # TODO: Traverse dTree and figure out dependency depth
-
+def Traverse_Tree_For_Dep_Depth(depTree, parent, currentDepth):
+    pass
 
 def main():
     packagesToCheck = ["tensorflow"]
