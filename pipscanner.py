@@ -423,9 +423,9 @@ def Calc_Num_Of_Vulns_At_Dep_Depths():
         Total_Current_Vulns += len(packageObj.vulns_for_installed_version)
         Total_All_Vulns += len(packageObj.all_package_vulns)
         if len(packageObj.vulns_for_installed_version) > 0:
-            print('Currently vulnerable packages' + packageObj.package_name)
+            print('Currently vulnerable packages: ' + packageObj.package_name + ', depth: ' + packageObj.depth)
         if len(packageObj.all_package_vulns) > 0:
-            print('Packages with vulnerable versions' + packageObj.package_name)
+            print('Packages with vulnerable versions: ' + packageObj.package_name + ', depth: ' + packageObj.depth)
 
     return (current_vuln_depth_dict, all_vuln_depth_dict)
 
