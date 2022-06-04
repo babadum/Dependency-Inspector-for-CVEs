@@ -104,7 +104,7 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
 
 
         #Adding CVEs should only occur for each packageJSONEntry and not when every package or dependency is created.
-        time.sleep(.1)
+        time.sleep(.05)
         cveResponse = getCVEData(["keyword"], [packageObj.package_name])
         parse_CVEs(cveResponse, packageObj, cpeDict)
 
@@ -381,7 +381,7 @@ def parse_CVE_config_nodes(node, cve, packageObj, cpeDict): #, parentOperator=Fa
     # TODO: Figure out new return value for when the cpe are all collected.
     return 0
 
-# TODO: Traverse dTree and figure out dependency depth
+# Traverses dTree and find out dependency depth
 def Traverse_Tree_For_Dep_Depth(parentNodeObj, currentDepth):
     if parentNodeObj.depth == 0 or parentNodeObj.depth > currentDepth:
         parentNodeObj.depth = currentDepth
@@ -390,8 +390,11 @@ def Traverse_Tree_For_Dep_Depth(parentNodeObj, currentDepth):
             Traverse_Tree_For_Dep_Depth(childNodeObj, currentDepth + 1)
     return
 
+
+# TODO: Build functionality that calculates the frequency of vulnerable dependencies at each depth of the deptree
+
 def main():
-    packagesToCheck = ["numpy"] #tested with numpy and tensorboard packages.
+    packagesToCheck = ["tensorboard"] #tested with numpy and tensorboard packages.
     output, errors = retrieve_raw_package_dependencies( packagesToCheck[0] )
     f = open("pip_list_results.txt", "w")
     f.write(output)

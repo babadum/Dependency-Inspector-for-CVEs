@@ -1,9 +1,357 @@
 [
     {
         "package": {
+            "key": "absl-py",
+            "package_name": "absl-py",
+            "installed_version": "1.0.0"
+        },
+        "dependencies": [
+            {
+                "key": "six",
+                "package_name": "six",
+                "installed_version": "1.14.0",
+                "required_version": null
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "cachetools",
+            "package_name": "cachetools",
+            "installed_version": "5.0.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "google-auth",
+            "package_name": "google-auth",
+            "installed_version": "2.6.2"
+        },
+        "dependencies": [
+            {
+                "key": "cachetools",
+                "package_name": "cachetools",
+                "installed_version": "5.0.0",
+                "required_version": ">=2.0.0,<6.0"
+            },
+            {
+                "key": "pyasn1-modules",
+                "package_name": "pyasn1-modules",
+                "installed_version": "0.2.8",
+                "required_version": ">=0.2.1"
+            },
+            {
+                "key": "rsa",
+                "package_name": "rsa",
+                "installed_version": "4.8",
+                "required_version": ">=3.1.4,<5"
+            },
+            {
+                "key": "six",
+                "package_name": "six",
+                "installed_version": "1.14.0",
+                "required_version": ">=1.9.0"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "google-auth-oauthlib",
+            "package_name": "google-auth-oauthlib",
+            "installed_version": "0.4.6"
+        },
+        "dependencies": [
+            {
+                "key": "google-auth",
+                "package_name": "google-auth",
+                "installed_version": "2.6.2",
+                "required_version": ">=1.0.0"
+            },
+            {
+                "key": "requests-oauthlib",
+                "package_name": "requests-oauthlib",
+                "installed_version": "1.3.1",
+                "required_version": ">=0.7.0"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "grpcio",
+            "package_name": "grpcio",
+            "installed_version": "1.44.0"
+        },
+        "dependencies": [
+            {
+                "key": "six",
+                "package_name": "six",
+                "installed_version": "1.14.0",
+                "required_version": ">=1.5.2"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "importlib-metadata",
+            "package_name": "importlib-metadata",
+            "installed_version": "4.11.3"
+        },
+        "dependencies": [
+            {
+                "key": "zipp",
+                "package_name": "zipp",
+                "installed_version": "3.7.0",
+                "required_version": ">=0.5"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "markdown",
+            "package_name": "Markdown",
+            "installed_version": "3.3.6"
+        },
+        "dependencies": [
+            {
+                "key": "importlib-metadata",
+                "package_name": "importlib-metadata",
+                "installed_version": "4.11.3",
+                "required_version": ">=4.4"
+            }
+        ]
+    },
+    {
+        "package": {
             "key": "numpy",
             "package_name": "numpy",
             "installed_version": "1.21.3"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "oauthlib",
+            "package_name": "oauthlib",
+            "installed_version": "3.1.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "protobuf",
+            "package_name": "protobuf",
+            "installed_version": "3.20.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "pyasn1",
+            "package_name": "pyasn1",
+            "installed_version": "0.4.8"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "pyasn1-modules",
+            "package_name": "pyasn1-modules",
+            "installed_version": "0.2.8"
+        },
+        "dependencies": [
+            {
+                "key": "pyasn1",
+                "package_name": "pyasn1",
+                "installed_version": "0.4.8",
+                "required_version": ">=0.4.6,<0.5.0"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "requests",
+            "package_name": "requests",
+            "installed_version": "2.22.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "requests-oauthlib",
+            "package_name": "requests-oauthlib",
+            "installed_version": "1.3.1"
+        },
+        "dependencies": [
+            {
+                "key": "oauthlib",
+                "package_name": "oauthlib",
+                "installed_version": "3.1.0",
+                "required_version": ">=3.0.0"
+            },
+            {
+                "key": "requests",
+                "package_name": "requests",
+                "installed_version": "2.22.0",
+                "required_version": ">=2.0.0"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "rsa",
+            "package_name": "rsa",
+            "installed_version": "4.8"
+        },
+        "dependencies": [
+            {
+                "key": "pyasn1",
+                "package_name": "pyasn1",
+                "installed_version": "0.4.8",
+                "required_version": ">=0.1.3"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "setuptools",
+            "package_name": "setuptools",
+            "installed_version": "45.2.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "six",
+            "package_name": "six",
+            "installed_version": "1.14.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "tensorboard",
+            "package_name": "tensorboard",
+            "installed_version": "2.8.0"
+        },
+        "dependencies": [
+            {
+                "key": "absl-py",
+                "package_name": "absl-py",
+                "installed_version": "1.0.0",
+                "required_version": ">=0.4"
+            },
+            {
+                "key": "google-auth",
+                "package_name": "google-auth",
+                "installed_version": "2.6.2",
+                "required_version": ">=1.6.3,<3"
+            },
+            {
+                "key": "google-auth-oauthlib",
+                "package_name": "google-auth-oauthlib",
+                "installed_version": "0.4.6",
+                "required_version": ">=0.4.1,<0.5"
+            },
+            {
+                "key": "grpcio",
+                "package_name": "grpcio",
+                "installed_version": "1.44.0",
+                "required_version": ">=1.24.3"
+            },
+            {
+                "key": "markdown",
+                "package_name": "markdown",
+                "installed_version": "3.3.6",
+                "required_version": ">=2.6.8"
+            },
+            {
+                "key": "numpy",
+                "package_name": "numpy",
+                "installed_version": "1.21.3",
+                "required_version": ">=1.12.0"
+            },
+            {
+                "key": "protobuf",
+                "package_name": "protobuf",
+                "installed_version": "3.20.0",
+                "required_version": ">=3.6.0"
+            },
+            {
+                "key": "requests",
+                "package_name": "requests",
+                "installed_version": "2.22.0",
+                "required_version": ">=2.21.0,<3"
+            },
+            {
+                "key": "setuptools",
+                "package_name": "setuptools",
+                "installed_version": "45.2.0",
+                "required_version": ">=41.0.0"
+            },
+            {
+                "key": "tensorboard-data-server",
+                "package_name": "tensorboard-data-server",
+                "installed_version": "0.6.1",
+                "required_version": ">=0.6.0,<0.7.0"
+            },
+            {
+                "key": "tensorboard-plugin-wit",
+                "package_name": "tensorboard-plugin-wit",
+                "installed_version": "1.8.1",
+                "required_version": ">=1.6.0"
+            },
+            {
+                "key": "werkzeug",
+                "package_name": "werkzeug",
+                "installed_version": "2.1.1",
+                "required_version": ">=0.11.15"
+            },
+            {
+                "key": "wheel",
+                "package_name": "wheel",
+                "installed_version": "0.34.2",
+                "required_version": ">=0.26"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "tensorboard-data-server",
+            "package_name": "tensorboard-data-server",
+            "installed_version": "0.6.1"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "tensorboard-plugin-wit",
+            "package_name": "tensorboard-plugin-wit",
+            "installed_version": "1.8.1"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "werkzeug",
+            "package_name": "Werkzeug",
+            "installed_version": "2.1.1"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "wheel",
+            "package_name": "wheel",
+            "installed_version": "0.34.2"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "zipp",
+            "package_name": "zipp",
+            "installed_version": "3.7.0"
         },
         "dependencies": []
     }
