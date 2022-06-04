@@ -18,7 +18,12 @@ deptree = {}
 # cpeDict: A dictionary of cpe's where the key = cpe and value = [CVEs] 
 cpeDict = {}
 # print(deptree[0]['package']['package_name'])
-jsonDeptree = []
+jsondeptree = []
+# Dictionary where the key is each level of the dependency tree and the value is the number of vulnerabilities at each level
+current_vuln_depth_dict = {}
+all_vuln_depth_dict = {}
+Total_Current_Vulns = 0
+Total_All_Vulns = 0
 
 # Function: Calls pipdeptree on the specified package
 def retrieve_raw_package_dependencies(package):
@@ -49,14 +54,14 @@ def retrieve_raw_package_dependencies(package):
 # Function: Currently parses the rawJSONString from pipdeptree into python dictionaries and retrieves the CVE Data for each.
 # Returns a tuple of the dependency tree in a dictionary and the parent package object
 def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
-    jsonDeptree = json.loads(rawJSONString)
+    jsondeptree = json.loads(rawJSONString)
 
     i = 0 # For testing only
 
 
     # deptree is a list of dictionaries that contain the packages and dependencies
     # This for loop fills the deptree with CVEs for each package
-    for packageJSONEntry in jsonDeptree:
+    for packageJSONEntry in jsondeptree:
         packageName = packageJSONEntry['package']['key']
         # packageNames.append(packageName)
 
@@ -102,7 +107,7 @@ def parse_Pipdeptree_JSON_For_NVD_CVEs(rawJSONString, parentName):
 
 
         #Adding CVEs should only occur for each packageJSONEntry and not when every package or dependency is created.
-        time.sleep(.05)
+        # time.sleep(.5)
         # Tested getCVEData with a keyword search, may need to compare against a cpeMatchString search
         # cveResponse = getCVEData(["keyword"], [packageObj.package_name])
 
@@ -399,21 +404,52 @@ def Traverse_Tree_For_Dep_Depth(parentNodeObj, currentDepth):
     return
 
 
-# TODO: Build functionality that calculates the frequency of vulnerable dependencies at each depth of the deptree
-def Calc_Num_of_Vulns_At_Dep_Depths(dependencyTree):
-    # Dictionary where the key is each level of the dependency tree and the value is the number of vulnerabilities at each level
-    vuln_count_depth_dict = {}
-
-    for packageKey in dependencyTree:
-        packageObj = dependencyTree[packageKey]
+# Calculates the frequency of vulnerable dependencies at each depth of the deptree
+def Calc_Num_Of_Vulns_At_Dep_Depths():
+    global Total_Current_Vulns, Total_All_Vulns
+    for packageKey in deptree:
+        packageObj = deptree[packageKey]
         # first check to see if the depth exists as a key in the dictionary
-        if packageObj.depth in vuln_count_depth_dict:
-            vuln_count_depth_dict[packageObj.depth] += len(packageObj.vulns_for_installed_version)
+        if packageObj.depth in current_vuln_depth_dict:
+            current_vuln_depth_dict[packageObj.depth]['count'] += len(packageObj.vulns_for_installed_version)
+            all_vuln_depth_dict[packageObj.depth]['count'] += len(packageObj.all_package_vulns)
+        else:
+            current_vuln_depth_dict[packageObj.depth] = {}
+            current_vuln_depth_dict[packageObj.depth]['count'] = len(packageObj.vulns_for_installed_version)
+            all_vuln_depth_dict[packageObj.depth] = {}
+            all_vuln_depth_dict[packageObj.depth]['count'] = len(packageObj.all_package_vulns)
+
+
+        Total_Current_Vulns += len(packageObj.vulns_for_installed_version)
+        Total_All_Vulns += len(packageObj.all_package_vulns)
+        if len(packageObj.vulns_for_installed_version) > 0:
+            print(packageObj.package_name)
+
+    return (current_vuln_depth_dict, all_vuln_depth_dict)
+
+
+# Calculates the fraction of total vulnerabilities at each depth of the deptree
+def Calc_Fraction_Of_Vulns_At_Dep_Depths():
+    global Total_Current_Vulns, Total_All_Vulns
+    for depth in current_vuln_depth_dict:
+        current_vuln_depth_dict[depth]['fraction'] = current_vuln_depth_dict[depth]['count']/Total_Current_Vulns
+    for depth in all_vuln_depth_dict:
+        all_vuln_depth_dict[depth]['fraction'] = all_vuln_depth_dict[depth]['count']/Total_All_Vulns
+
+    return (current_vuln_depth_dict, all_vuln_depth_dict)
+
+
+def Print_Depth_Dict(Depth_Dictionary):
+    for depth in Depth_Dictionary:
+        print('Depth: ' + str(depth))
+        print('\t Count: ' + str(Depth_Dictionary[depth]['count']))
+        print('\t Fraction: ' + str(Depth_Dictionary[depth]['fraction']))
+
 
 
 
 def main():
-    packagesToCheck = ["numpy"] #tested with numpy and tensorboard packages.
+    packagesToCheck = ["tensorflow"] #tested with numpy and tensorboard packages.
     output, errors = retrieve_raw_package_dependencies( packagesToCheck[0] )
     f = open("pip_list_results.txt", "w")
     f.write(output)
@@ -428,9 +464,18 @@ def main():
 
     Traverse_Tree_For_Dep_Depth(parentPackage, 0)
 
-    for packageKey in dTree:
-        print(dTree[packageKey])
-        print()
+    # for packageKey in dTree:
+    #     print(dTree[packageKey])
+    #     print()
+
+    Calc_Num_Of_Vulns_At_Dep_Depths()
+    Calc_Fraction_Of_Vulns_At_Dep_Depths()
+
+    print('Current Vuln Depths')
+    Print_Depth_Dict(current_vuln_depth_dict)
+    print()
+    print('All Vuln Depths')
+    Print_Depth_Dict(all_vuln_depth_dict)
 
 
 
