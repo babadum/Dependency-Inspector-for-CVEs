@@ -407,6 +407,8 @@ def Traverse_Tree_For_Dep_Depth(parentNodeObj, currentDepth):
 # Calculates the frequency of vulnerable dependencies at each depth of the deptree
 def Calc_Num_Of_Vulns_At_Dep_Depths():
     global Total_Current_Vulns, Total_All_Vulns
+    Currently_vuln_packages_str = ''
+    All_vuln_packages_str = ''
     for packageKey in deptree:
         packageObj = deptree[packageKey]
         # first check to see if the depth exists as a key in the dictionary
@@ -423,11 +425,11 @@ def Calc_Num_Of_Vulns_At_Dep_Depths():
         Total_Current_Vulns += len(packageObj.vulns_for_installed_version)
         Total_All_Vulns += len(packageObj.all_package_vulns)
         if len(packageObj.vulns_for_installed_version) > 0:
-            print('Currently vulnerable packages: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth))
+            Currently_vuln_packages_str += 'Currently vulnerable packages: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth) + '\n'
         if len(packageObj.all_package_vulns) > 0:
-            print('Packages with vulnerable versions: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth))
+            All_vuln_packages_str += 'Packages with vulnerable versions: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth) + '\n'
 
-    return (current_vuln_depth_dict, all_vuln_depth_dict)
+    return (current_vuln_depth_dict, all_vuln_depth_dict, Currently_vuln_packages_str, All_vuln_packages_str)
 
 
 # Calculates the fraction of total vulnerabilities at each depth of the deptree
@@ -470,12 +472,14 @@ def main():
     #     print(dTree[packageKey])
     #     print()
 
-    Calc_Num_Of_Vulns_At_Dep_Depths()
+    current_vuln_depth_dict, all_vuln_depth_dict, Currently_vuln_packages_str, All_vuln_packages_str = Calc_Num_Of_Vulns_At_Dep_Depths()
     Calc_Fraction_Of_Vulns_At_Dep_Depths()
 
+    print(Currently_vuln_packages_str)
     print('Current Vuln Depths')
     Print_Depth_Dict(current_vuln_depth_dict)
     print()
+    print(All_vuln_packages_str)
     print('All Vuln Depths')
     Print_Depth_Dict(all_vuln_depth_dict)
 
