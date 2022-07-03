@@ -1,0 +1,27 @@
+
+
+Current Vuln Depths
+Depth: 1
+	 Count: 0
+	 Fraction: 0
+Depth: 2
+	 Count: 0
+	 Fraction: 0
+Depth: 0
+	 Count: 0
+	 Fraction: 0
+
+Packages with vulnerable versions: numpy, depth: 2
+Packages with vulnerable versions: scikit-learn, depth: 0
+Packages with vulnerable versions: scipy, depth: 1
+
+All Vuln Depths
+Depth: 1
+	 Count: 1
+	 Fraction: 0.09090909090909091
+Depth: 2
+	 Count: 8
+	 Fraction: 0.7272727272727273
+Depth: 0
+	 Count: 2
+	 Fraction: 0.18181818181818182

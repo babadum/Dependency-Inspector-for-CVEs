@@ -1,0 +1,25 @@
+[
+    {
+        "package": {
+            "key": "numpy",
+            "package_name": "numpy",
+            "installed_version": "1.23.0"
+        },
+        "dependencies": []
+    },
+    {
+        "package": {
+            "key": "scipy",
+            "package_name": "scipy",
+            "installed_version": "1.8.1"
+        },
+        "dependencies": [
+            {
+                "key": "numpy",
+                "package_name": "numpy",
+                "installed_version": "1.23.0",
+                "required_version": ">=1.17.3,<1.25.0"
+            }
+        ]
+    }
+]

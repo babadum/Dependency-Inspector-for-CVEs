@@ -1,0 +1,40 @@
+[
+    {
+        "package": {
+            "key": "torch",
+            "package_name": "torch",
+            "installed_version": "1.12.0+cpu"
+        },
+        "dependencies": [
+            {
+                "key": "typing-extensions",
+                "package_name": "typing-extensions",
+                "installed_version": "4.3.0",
+                "required_version": null
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "torchaudio",
+            "package_name": "torchaudio",
+            "installed_version": "0.12.0+cpu"
+        },
+        "dependencies": [
+            {
+                "key": "torch",
+                "package_name": "torch",
+                "installed_version": "1.12.0+cpu",
+                "required_version": "==1.12.0"
+            }
+        ]
+    },
+    {
+        "package": {
+            "key": "typing-extensions",
+            "package_name": "typing-extensions",
+            "installed_version": "4.3.0"
+        },
+        "dependencies": []
+    }
+]

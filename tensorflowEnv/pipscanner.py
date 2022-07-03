@@ -7,7 +7,6 @@ import requests
 import time
 from packaging import version
 from packageClass import Package
-import sys
 
 # Globals
 # deptree: A dictionary containing package objects with key = packageNameString and value = package objects
@@ -146,10 +145,10 @@ def getCVEData(paramNames, paramVals):
 
 
 # Function: Goes through the deptree and compare package version to CVE entry and version number
-#           Use to evaluate the data after cpe's have been retrieved
-#           Use what is currently in this function to fill the cpe's and do the version matching using different logic.
+# NEWTODO: Use to evaluate the data after cpe's have been retrieved
+#          Use what is currently in this function to fill the cpe's and do the version matching using different logic.
 def package_version_match_CVEs(dependencyTree, cpeDict):
-    packageCVEMatch = False
+    # packageCVEMatch = False
     # cpeMatch = False
 
     # Parse through the deptree and match CVEs and CPE's for the given package to decide if vulnerable.
@@ -437,16 +436,9 @@ def Calc_Num_Of_Vulns_At_Dep_Depths():
 def Calc_Fraction_Of_Vulns_At_Dep_Depths():
     global Total_Current_Vulns, Total_All_Vulns
     for depth in current_vuln_depth_dict:
-        if Total_Current_Vulns != 0:
-            current_vuln_depth_dict[depth]['fraction'] = current_vuln_depth_dict[depth]['count']/Total_Current_Vulns
-        else:
-            current_vuln_depth_dict[depth]['fraction'] = 0
-
+        current_vuln_depth_dict[depth]['fraction'] = current_vuln_depth_dict[depth]['count']/Total_Current_Vulns
     for depth in all_vuln_depth_dict:
-        if Total_All_Vulns != 0:
-            all_vuln_depth_dict[depth]['fraction'] = all_vuln_depth_dict[depth]['count']/Total_All_Vulns
-        else:
-            all_vuln_depth_dict[depth]['fraction'] = 0
+        all_vuln_depth_dict[depth]['fraction'] = all_vuln_depth_dict[depth]['count']/Total_All_Vulns
 
     return (current_vuln_depth_dict, all_vuln_depth_dict)
 
@@ -461,17 +453,7 @@ def Print_Depth_Dict(Depth_Dictionary):
 
 
 def main():
-
-    if len(sys.argv) >= 2:
-        package = sys.argv[1]
-
-    else:
-        usage = "USAGE: pipscanner.py [package] \
-                    Ex: python3 pipscanner.py tensorflow"
-        package = 'tensorflow'
-
-
-    packagesToCheck = [package] #tested with numpy and tensorboard packages.
+    packagesToCheck = ["tensorflow"] #tested with numpy and tensorboard packages.
     output, errors = retrieve_raw_package_dependencies( packagesToCheck[0] )
     f = open("pip_list_results.txt", "w")
     f.write(output)

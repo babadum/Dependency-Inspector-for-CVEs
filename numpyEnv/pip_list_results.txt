@@ -1,0 +1,10 @@
+[
+    {
+        "package": {
+            "key": "numpy",
+            "package_name": "numpy",
+            "installed_version": "1.23.0"
+        },
+        "dependencies": []
+    }
+]

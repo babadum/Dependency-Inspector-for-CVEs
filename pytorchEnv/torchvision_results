@@ -1,0 +1,28 @@
+
+
+Current Vuln Depths
+Depth: 2
+	 Count: 0
+	 Fraction: 0
+Depth: 1
+	 Count: 0
+	 Fraction: 0
+Depth: 0
+	 Count: 0
+	 Fraction: 0
+
+Packages with vulnerable versions: numpy, depth: 1
+Packages with vulnerable versions: pillow, depth: 1
+Packages with vulnerable versions: requests, depth: 1
+Packages with vulnerable versions: urllib3, depth: 2
+
+All Vuln Depths
+Depth: 2
+	 Count: 8
+	 Fraction: 0.18181818181818182
+Depth: 1
+	 Count: 36
+	 Fraction: 0.8181818181818182
+Depth: 0
+	 Count: 0
+	 Fraction: 0.0

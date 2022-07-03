@@ -1,0 +1,53 @@
+
+Currently vulnerable packages: flatbuffers, depth: 1
+
+Current Vuln Depths
+Depth: 2
+	 Count: 0
+	 Fraction: 0.0
+Depth: 1
+	 Count: 1
+	 Fraction: 1.0
+Depth: 4
+	 Count: 0
+	 Fraction: 0.0
+Depth: 5
+	 Count: 0
+	 Fraction: 0.0
+Depth: 3
+	 Count: 0
+	 Fraction: 0.0
+Depth: 0
+	 Count: 0
+	 Fraction: 0.0
+
+Packages with vulnerable versions: flatbuffers, depth: 1
+Packages with vulnerable versions: rsa, depth: 4
+Packages with vulnerable versions: numpy, depth: 2
+Packages with vulnerable versions: markdown, depth: 2
+Packages with vulnerable versions: protobuf, depth: 2
+Packages with vulnerable versions: requests, depth: 4
+Packages with vulnerable versions: urllib3, depth: 5
+Packages with vulnerable versions: setuptools, depth: 2
+Packages with vulnerable versions: werkzeug, depth: 2
+Packages with vulnerable versions: tensorflow, depth: 0
+
+All Vuln Depths
+Depth: 2
+	 Count: 18
+	 Fraction: 0.3157894736842105
+Depth: 1
+	 Count: 2
+	 Fraction: 0.03508771929824561
+Depth: 4
+	 Count: 9
+	 Fraction: 0.15789473684210525
+Depth: 5
+	 Count: 8
+	 Fraction: 0.14035087719298245
+Depth: 3
+	 Count: 0
+	 Fraction: 0.0
+Depth: 0
+	 Count: 20
+	 Fraction: 0.3508771929824561
