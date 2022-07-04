@@ -1,5 +1,9 @@
 
-Currently vulnerable packages: flatbuffers, depth: 1
+Currently vulnerable packages: flatbuffers, depth: 1, CVEs:  
+	 vulns for installed version: [
+	CVE-2020-35864
+	]
+
 
 Current Vuln Depths
 Depth: 2
@@ -21,16 +25,56 @@ Depth: 0
 	 Count: 0
 	 Fraction: 0.0
 
-Packages with vulnerable versions: flatbuffers, depth: 1
-Packages with vulnerable versions: rsa, depth: 4
-Packages with vulnerable versions: numpy, depth: 2
-Packages with vulnerable versions: markdown, depth: 2
-Packages with vulnerable versions: protobuf, depth: 2
-Packages with vulnerable versions: requests, depth: 4
-Packages with vulnerable versions: urllib3, depth: 5
-Packages with vulnerable versions: setuptools, depth: 2
-Packages with vulnerable versions: werkzeug, depth: 2
-Packages with vulnerable versions: tensorflow, depth: 0
+Packages with vulnerable versions: flatbuffers, depth: 1,  
+	 all vulns for any version: [
+	CVE-2020-35864, CVE-2019-25004
+	]
+
+Packages with vulnerable versions: rsa, depth: 4,  
+	 all vulns for any version: [
+	CVE-2016-1494
+	]
+
+Packages with vulnerable versions: numpy, depth: 2,  
+	 all vulns for any version: [
+	CVE-2021-41496, CVE-2021-34141, CVE-2021-41495, CVE-2021-33430, CVE-2017-12852, CVE-2019-6446, CVE-2014-1859, CVE-2014-1858
+	]
+
+Packages with vulnerable versions: markdown, depth: 2,  
+	 all vulns for any version: [
+	CVE-2018-1000874
+	]
+
+Packages with vulnerable versions: protobuf, depth: 2,  
+	 all vulns for any version: [
+	CVE-2021-22570, CVE-2021-3121, CVE-2015-5237
+	]
+
+Packages with vulnerable versions: requests, depth: 4,  
+	 all vulns for any version: [
+	CVE-2021-21676, CVE-2021-21674, CVE-2021-21675, CVE-2021-29476, CVE-2018-18074, CVE-2015-2296, CVE-2014-1830, CVE-2014-1829
+	]
+
+Packages with vulnerable versions: urllib3, depth: 5,  
+	 all vulns for any version: [
+	CVE-2021-33503, CVE-2021-28363, CVE-2020-26137, CVE-2019-11324, CVE-2019-11236, CVE-2018-20060, CVE-2020-7212, CVE-2016-9015
+	]
+
+Packages with vulnerable versions: setuptools, depth: 2,  
+	 all vulns for any version: [
+	CVE-2013-1633
+	]
+
+Packages with vulnerable versions: werkzeug, depth: 2,  
+	 all vulns for any version: [
+	CVE-2022-29361, CVE-2019-14322, CVE-2020-28724, CVE-2019-14806, CVE-2016-10516
+	]
+
+Packages with vulnerable versions: tensorflow, depth: 0,  
+	 all vulns for any version: [
+	CVE-2022-29213, CVE-2022-29212, CVE-2022-29211, CVE-2022-29216, CVE-2022-29210, CVE-2022-29209, CVE-2022-29208, CVE-2022-29206, CVE-2022-29205, CVE-2022-29204, CVE-2022-29203, CVE-2022-29202, CVE-2022-29201, CVE-2022-29207, CVE-2022-29200, CVE-2022-29194, CVE-2022-29192, CVE-2022-29191, CVE-2022-29199, CVE-2022-29198
+	]
+
 
 All Vuln Depths
 Depth: 2
@@ -51,3 +95,5 @@ Depth: 3
 Depth: 0
 	 Count: 20
 	 Fraction: 0.3508771929824561
+
+Total Number of packages in deptree: 44

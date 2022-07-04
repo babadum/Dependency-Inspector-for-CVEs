@@ -146,10 +146,10 @@ def getCVEData(paramNames, paramVals):
 
 
 # Function: Goes through the deptree and compare package version to CVE entry and version number
-# NEWTODO: Use to evaluate the data after cpe's have been retrieved
-#          Use what is currently in this function to fill the cpe's and do the version matching using different logic.
+#           Use to evaluate the data after cpe's have been retrieved
+#           Use what is currently in this function to fill the cpe's and do the version matching using different logic.
 def package_version_match_CVEs(dependencyTree, cpeDict):
-    # packageCVEMatch = False
+    packageCVEMatch = False
     # cpeMatch = False
 
     # Parse through the deptree and match CVEs and CPE's for the given package to decide if vulnerable.
@@ -500,6 +500,8 @@ def main():
     print(All_vuln_packages_str)
     print('All Vuln Depths')
     Print_Depth_Dict(all_vuln_depth_dict)
+    print()
+    print('Total Number of packages in deptree: ' + str(len(dTree)))
 
 
 

@@ -500,6 +500,8 @@ def main():
     print(All_vuln_packages_str)
     print('All Vuln Depths')
     Print_Depth_Dict(all_vuln_depth_dict)
+    print()
+    print('Total Number of packages in deptree: ' + str(len(dTree)))
 
 
 

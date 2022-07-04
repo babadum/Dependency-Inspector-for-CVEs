@@ -426,9 +426,14 @@ def Calc_Num_Of_Vulns_At_Dep_Depths():
         Total_Current_Vulns += len(packageObj.vulns_for_installed_version)
         Total_All_Vulns += len(packageObj.all_package_vulns)
         if len(packageObj.vulns_for_installed_version) > 0:
-            Currently_vuln_packages_str += 'Currently vulnerable packages: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth) + '\n'
+            Currently_vuln_packages_str +=  'Currently vulnerable packages: ' + packageObj.package_name + \
+                                            ', depth: ' + str(packageObj.depth) + \
+                                            ', CVEs: ' + str(packageObj.Get_Current_Vulns_Str()) + '\n'
         if len(packageObj.all_package_vulns) > 0:
-            All_vuln_packages_str += 'Packages with vulnerable versions: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth) + '\n'
+            All_vuln_packages_str +=    'Packages with vulnerable versions: ' + packageObj.package_name + \
+                                        ', depth: ' + str(packageObj.depth) + \
+                                        ', ' + str(packageObj.Get_All_Vulns_Str()) + '\n'
+
 
     return (current_vuln_depth_dict, all_vuln_depth_dict, Currently_vuln_packages_str, All_vuln_packages_str)
 
@@ -500,6 +505,8 @@ def main():
     print(All_vuln_packages_str)
     print('All Vuln Depths')
     Print_Depth_Dict(all_vuln_depth_dict)
+    print()
+    print('Total Number of packages in deptree: ' + str(len(dTree)))
 
 
 

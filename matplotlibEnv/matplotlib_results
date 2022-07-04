@@ -11,8 +11,16 @@ Depth: 2
 	 Count: 0
 	 Fraction: 0
 
-Packages with vulnerable versions: numpy, depth: 1
-Packages with vulnerable versions: pillow, depth: 1
+Packages with vulnerable versions: numpy, depth: 1,  
+	 all vulns for any version: [
+	CVE-2021-41496, CVE-2021-34141, CVE-2021-41495, CVE-2021-33430, CVE-2017-12852, CVE-2019-6446, CVE-2014-1859, CVE-2014-1858
+	]
+
+Packages with vulnerable versions: pillow, depth: 1,  
+	 all vulns for any version: [
+	CVE-2022-30595, CVE-2022-22815, CVE-2022-24303, CVE-2020-35653, CVE-2022-22817, CVE-2022-22816, CVE-2021-27922, CVE-2021-27921, CVE-2021-27923, CVE-2021-25290, CVE-2021-25289, CVE-2021-25291, CVE-2021-25292, CVE-2021-25293, CVE-2021-25287, CVE-2021-25288, CVE-2021-23437, CVE-2021-34552, CVE-2021-28676, CVE-2021-28675
+	]
+
 
 All Vuln Depths
 Depth: 1
@@ -24,3 +32,5 @@ Depth: 0
 Depth: 2
 	 Count: 0
 	 Fraction: 0.0
+
+Total Number of packages in deptree: 10

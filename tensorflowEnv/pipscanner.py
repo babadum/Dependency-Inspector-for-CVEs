@@ -7,6 +7,7 @@ import requests
 import time
 from packaging import version
 from packageClass import Package
+import sys
 
 # Globals
 # deptree: A dictionary containing package objects with key = packageNameString and value = package objects
@@ -145,10 +146,10 @@ def getCVEData(paramNames, paramVals):
 
 
 # Function: Goes through the deptree and compare package version to CVE entry and version number
-# NEWTODO: Use to evaluate the data after cpe's have been retrieved
-#          Use what is currently in this function to fill the cpe's and do the version matching using different logic.
+#           Use to evaluate the data after cpe's have been retrieved
+#           Use what is currently in this function to fill the cpe's and do the version matching using different logic.
 def package_version_match_CVEs(dependencyTree, cpeDict):
-    # packageCVEMatch = False
+    packageCVEMatch = False
     # cpeMatch = False
 
     # Parse through the deptree and match CVEs and CPE's for the given package to decide if vulnerable.
@@ -425,9 +426,14 @@ def Calc_Num_Of_Vulns_At_Dep_Depths():
         Total_Current_Vulns += len(packageObj.vulns_for_installed_version)
         Total_All_Vulns += len(packageObj.all_package_vulns)
         if len(packageObj.vulns_for_installed_version) > 0:
-            Currently_vuln_packages_str += 'Currently vulnerable packages: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth) + '\n'
+            Currently_vuln_packages_str +=  'Currently vulnerable packages: ' + packageObj.package_name + \
+                                            ', depth: ' + str(packageObj.depth) + \
+                                            ', CVEs: ' + str(packageObj.Get_Current_Vulns_Str()) + '\n'
         if len(packageObj.all_package_vulns) > 0:
-            All_vuln_packages_str += 'Packages with vulnerable versions: ' + packageObj.package_name + ', depth: ' + str(packageObj.depth) + '\n'
+            All_vuln_packages_str +=    'Packages with vulnerable versions: ' + packageObj.package_name + \
+                                        ', depth: ' + str(packageObj.depth) + \
+                                        ', ' + str(packageObj.Get_All_Vulns_Str()) + '\n'
+
 
     return (current_vuln_depth_dict, all_vuln_depth_dict, Currently_vuln_packages_str, All_vuln_packages_str)
 
@@ -436,9 +442,16 @@ def Calc_Num_Of_Vulns_At_Dep_Depths():
 def Calc_Fraction_Of_Vulns_At_Dep_Depths():
     global Total_Current_Vulns, Total_All_Vulns
     for depth in current_vuln_depth_dict:
-        current_vuln_depth_dict[depth]['fraction'] = current_vuln_depth_dict[depth]['count']/Total_Current_Vulns
+        if Total_Current_Vulns != 0:
+            current_vuln_depth_dict[depth]['fraction'] = current_vuln_depth_dict[depth]['count']/Total_Current_Vulns
+        else:
+            current_vuln_depth_dict[depth]['fraction'] = 0
+
     for depth in all_vuln_depth_dict:
-        all_vuln_depth_dict[depth]['fraction'] = all_vuln_depth_dict[depth]['count']/Total_All_Vulns
+        if Total_All_Vulns != 0:
+            all_vuln_depth_dict[depth]['fraction'] = all_vuln_depth_dict[depth]['count']/Total_All_Vulns
+        else:
+            all_vuln_depth_dict[depth]['fraction'] = 0
 
     return (current_vuln_depth_dict, all_vuln_depth_dict)
 
@@ -453,7 +466,17 @@ def Print_Depth_Dict(Depth_Dictionary):
 
 
 def main():
-    packagesToCheck = ["tensorflow"] #tested with numpy and tensorboard packages.
+
+    if len(sys.argv) >= 2:
+        package = sys.argv[1]
+
+    else:
+        usage = "USAGE: pipscanner.py [package] \
+                    Ex: python3 pipscanner.py tensorflow"
+        package = 'tensorflow'
+
+
+    packagesToCheck = [package] #tested with numpy and tensorboard packages.
     output, errors = retrieve_raw_package_dependencies( packagesToCheck[0] )
     f = open("pip_list_results.txt", "w")
     f.write(output)
@@ -482,6 +505,8 @@ def main():
     print(All_vuln_packages_str)
     print('All Vuln Depths')
     Print_Depth_Dict(all_vuln_depth_dict)
+    print()
+    print('Total Number of packages in deptree: ' + str(len(dTree)))
 
 
 
