@@ -78,3 +78,40 @@ class Package():
         packageString += '\n'
 
         return packageString 
+
+    def Get_Current_Vulns_Str(self):
+        current_vulns_str = ''
+        if len(self.vulns_for_installed_version) > 0:
+            current_vulns_str += ' \n\t vulns for installed version: ['
+
+            for i in range(len(self.vulns_for_installed_version)):
+                if i == 0:
+                    current_vulns_str += '\n\t'
+                current_vulns_str += str(self.vulns_for_installed_version[i]['cve']['CVE_data_meta']['ID']) 
+                if i != len(self.vulns_for_installed_version)-1:
+                    current_vulns_str += ', '
+
+            current_vulns_str += '\n\t]\n'
+        else:
+            current_vulns_str += ' \n\t vulns for installed version: []'
+
+        return current_vulns_str
+        
+
+    def Get_All_Vulns_Str(self):
+        all_vulns_str = ''
+        if len(self.all_package_vulns) > 0:
+            all_vulns_str += ' \n\t all vulns for any version: ['
+
+            for i in range(len(self.all_package_vulns)):
+                if i == 0:
+                    all_vulns_str += '\n\t'
+                all_vulns_str += str(self.all_package_vulns[i]['cve']['CVE_data_meta']['ID']) 
+                if i != len(self.all_package_vulns)-1:
+                    all_vulns_str += ', '
+
+            all_vulns_str += '\n\t]\n'
+        else:
+            all_vulns_str += ' \n\t all vulns for any version: []'
+
+        return all_vulns_str

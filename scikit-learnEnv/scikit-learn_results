@@ -11,9 +11,21 @@ Depth: 0
 	 Count: 0
 	 Fraction: 0
 
-Packages with vulnerable versions: numpy, depth: 2
-Packages with vulnerable versions: scikit-learn, depth: 0
-Packages with vulnerable versions: scipy, depth: 1
+Packages with vulnerable versions: numpy, depth: 2,  
+	 all vulns for any version: [
+	CVE-2021-41496, CVE-2021-34141, CVE-2021-41495, CVE-2021-33430, CVE-2017-12852, CVE-2019-6446, CVE-2014-1859, CVE-2014-1858
+	]
+
+Packages with vulnerable versions: scikit-learn, depth: 0,  
+	 all vulns for any version: [
+	CVE-2020-28975, CVE-2020-13092
+	]
+
+Packages with vulnerable versions: scipy, depth: 1,  
+	 all vulns for any version: [
+	CVE-2013-4251
+	]
+
 
 All Vuln Depths
 Depth: 1

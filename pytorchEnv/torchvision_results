@@ -11,10 +11,26 @@ Depth: 0
 	 Count: 0
 	 Fraction: 0
 
-Packages with vulnerable versions: numpy, depth: 1
-Packages with vulnerable versions: pillow, depth: 1
-Packages with vulnerable versions: requests, depth: 1
-Packages with vulnerable versions: urllib3, depth: 2
+Packages with vulnerable versions: numpy, depth: 1,  
+	 all vulns for any version: [
+	CVE-2021-41496, CVE-2021-34141, CVE-2021-41495, CVE-2021-33430, CVE-2017-12852, CVE-2019-6446, CVE-2014-1859, CVE-2014-1858
+	]
+
+Packages with vulnerable versions: pillow, depth: 1,  
+	 all vulns for any version: [
+	CVE-2022-30595, CVE-2022-22815, CVE-2022-24303, CVE-2020-35653, CVE-2022-22817, CVE-2022-22816, CVE-2021-27922, CVE-2021-27921, CVE-2021-27923, CVE-2021-25290, CVE-2021-25289, CVE-2021-25291, CVE-2021-25292, CVE-2021-25293, CVE-2021-25287, CVE-2021-25288, CVE-2021-23437, CVE-2021-34552, CVE-2021-28676, CVE-2021-28675
+	]
+
+Packages with vulnerable versions: requests, depth: 1,  
+	 all vulns for any version: [
+	CVE-2021-21676, CVE-2021-21674, CVE-2021-21675, CVE-2021-29476, CVE-2018-18074, CVE-2015-2296, CVE-2014-1830, CVE-2014-1829
+	]
+
+Packages with vulnerable versions: urllib3, depth: 2,  
+	 all vulns for any version: [
+	CVE-2021-33503, CVE-2021-28363, CVE-2020-26137, CVE-2019-11324, CVE-2019-11236, CVE-2018-20060, CVE-2020-7212, CVE-2016-9015
+	]
+
 
 All Vuln Depths
 Depth: 2
